@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Card from "./Card";
 import CheckIcon from "../icons/CheckIcon";
 import CancelIcon from "../icons/CancelIcon";
 import DeleteIcon from "../icons/DeleteIcon";
 import { NoteType } from "../App";
+import { useNotification } from "./NotificationContext";
 
 interface EditWindowProps {
   note: NoteType;
@@ -15,6 +16,7 @@ interface EditWindowProps {
 
 function EditWindow({ note, onSave, onCancel, onDelete }: EditWindowProps) {
   const [content, setContent] = useState(note.content);
+  const notify = useNotification();
 
   useEffect(() => {
     setContent(note.content);
@@ -22,17 +24,27 @@ function EditWindow({ note, onSave, onCancel, onDelete }: EditWindowProps) {
 
   const handleSave = () => {
     const trimmedContent = content.trim();
-    if (trimmedContent && trimmedContent !== note.content) {
+    if (!trimmedContent) {
+      notify({
+        type: "warning",
+        message: "Note content cannot be empty",
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (trimmedContent !== note.content) {
       onSave(note.id, trimmedContent);
-    } else if (!trimmedContent) {
-      alert("Note content cannot be empty.");
     } else {
       onCancel();
     }
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Delete note "${note.content.substring(0, 20)}..."?`)) {
+    const confirmDelete = window.confirm(
+      `Delete note "${note.content.substring(0, 20)}..."?`
+    );
+    if (confirmDelete) {
       onDelete(note.id);
     }
   };
@@ -45,7 +57,7 @@ function EditWindow({ note, onSave, onCancel, onDelete }: EditWindowProps) {
           onChange={(e) => setContent(e.target.value)}
           className="p-4 w-full h-full overflow-auto resize-none focus:outline-0 text-base caret-indigo-500"
           autoFocus
-        ></textarea>
+        />
       </Card>
       <div className="flex gap-4 max-w-[800px] ml-auto w-full">
         <button
