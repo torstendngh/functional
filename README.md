@@ -16,9 +16,7 @@ A sleek, cross-platform note-taking app with a built-in special characters pane 
 ## 🎬 Demo
 
 <p align="center"  width="100%">
-   <video muted autoplay loop playsinline>
-      <source src="./static/functional.mp4" type="video/mp4"/>
-   </video>
+   <img height="500px" src="./static/functional.gif"> 
 </p>
 
 ## ⚡️ Installation
